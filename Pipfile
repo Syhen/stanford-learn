@@ -6,9 +6,9 @@ name = "pypi"
 [packages]
 pandas = "*"
 xlrd = "*"
-openpyxl = "*"
 autograd = "*"
 scikit-learn = "*"
+matplotlib = "*"
 
 [dev-packages]
 
