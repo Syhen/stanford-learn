@@ -4,6 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+pandas = "*"
+xlrd = "*"
+openpyxl = "*"
+autograd = "*"
+scikit-learn = "*"
 
 [dev-packages]
 
