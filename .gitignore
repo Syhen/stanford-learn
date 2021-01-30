@@ -4,3 +4,12 @@ __pycache__/
 
 # PyCharm
 .idea/
+
+# log
+*.log
+
+# LaTeX
+*.aux
+*.fdb_latexmk
+*.fls
+*.gz
