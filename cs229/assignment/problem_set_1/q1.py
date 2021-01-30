@@ -3,6 +3,7 @@
 create on 2021-01-29 20:46
 author @66492
 """
+import matplotlib.pyplot as plt
 import numpy as np
 
 from cs229.assignment.problem_set_1 import solver
@@ -18,7 +19,7 @@ class LogisticRegression(object):
         self.fit_interception_ = fit_interception
         self.theta_initial_ = theta_initial
         self.theta_ = None
-        self.interception_ = None
+        self.interception_ = 0
         self.optimal_theta_ = None
         self.fitted = False
 
@@ -81,6 +82,10 @@ class LogisticRegression(object):
             return y.reshape(-1, 1)
         return y
 
+    def _check_fit(self):
+        if not self.fitted:
+            raise RuntimeWarning("must call `fit` function first.")
+
     def fit(self, X, y=None):
         theta = self._initial_theta(X)
         X = self._check_X(X)
@@ -100,15 +105,45 @@ class LogisticRegression(object):
         return self
 
     def predict_proba(self, X):
-        if not self.fitted:
-            raise RuntimeWarning("must call `fit` function first.")
+        self._check_fit()
         X = self._check_X(X)
-        proba = activations.sigmoid(X@self.optimal_theta_)
+        proba = activations.sigmoid(X @ self.optimal_theta_)
         return proba
 
     def predict(self, X):
         proba = self.predict_proba(X)
         return np.where(proba > 0.5, 1, -1)
+
+    def plot_decision_boundary(self, X, y):
+        """Plot decision boundary
+
+        decision boundary is `\Theta^TX=0` in logistic regression.
+        so given x1 and use this formula to solver x2, then plot it.
+        :param X:
+        :param y:
+        :return:
+        """
+        self._check_fit()
+        x1_min, x2_min = X.min(axis=0)
+        x1_max, x2_max = X.max(axis=0)
+        boundary_x1 = np.linspace(x1_min, x1_max, num=100)
+        x2 = -(self.interception_ + self.theta_[0] * boundary_x1) / self.theta_[1]
+        m, n = X.shape
+        x_positive = []
+        x_negative = []
+        for i in range(m):
+            if y[i] == 1:
+                x_positive.append(X[i])
+            else:
+                x_negative.append(X[i])
+        x_positive, x_negative = np.array(x_positive), np.array(x_negative)
+        s1 = plt.scatter(x_positive[:, 0], x_positive[:, 1], marker="o", c="#1f77b4")
+        s2 = plt.scatter(x_negative[:, 0], x_negative[:, 1], marker="x", c="#ff7f0e")
+        plt.xlabel("x1")
+        plt.ylabel("x2")
+        plt.legend(handles=[s1, s2], labels=["target=1", "target=-1"], loc="best")
+        plt.plot(boundary_x1, x2)
+        plt.show()
 
 
 if __name__ == '__main__':
@@ -122,3 +157,4 @@ if __name__ == '__main__':
     y_pred = logistic_regression.predict(x)
     print("optimal_theta:", logistic_regression.optimal_theta_)
     print("accuracy: %.5f" % metrics.accuracy(y, y_pred))
+    logistic_regression.plot_decision_boundary(x, y)
